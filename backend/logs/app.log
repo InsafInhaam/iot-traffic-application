@@ -1,0 +1,116 @@
+2025-12-14 02:58:42,253 | INFO | simulator | 🔥 Startup event reached
+2025-12-14 02:59:36,766 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 02:59:37,534 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 02:59:37,536 | INFO | simulator | 🚦 Simulator started
+2025-12-14 02:59:38,972 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 02:59:39,617 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 02:59:39,619 | INFO | simulator | 🚦 Simulator started
+2025-12-14 02:59:57,927 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:00:05,403 | ERROR | simulator | ❌ OSM snapping failed
+Traceback (most recent call last):
+  File "/app/app/main.py", line 93, in startup_event
+    simulator.snap_intersections_to_osm()
+  File "/app/app/tasks/simulator.py", line 53, in snap_intersections_to_osm
+    signals = fetch_traffic_signals(BBOX)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/osm.py", line 15, in fetch_traffic_signals
+    res.raise_for_status()
+  File "/usr/local/lib/python3.11/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 504 Server Error: Gateway Timeout for url: https://overpass-api.de/api/interpreter
+2025-12-14 03:00:05,419 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:00:14,221 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:00:14,222 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:00:19,751 | ERROR | simulator | ❌ Failed to fetch OSM traffic signals
+Traceback (most recent call last):
+  File "/app/app/tasks/simulator.py", line 54, in snap_intersections_to_osm
+    signals = fetch_traffic_signals(BBOX)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/osm.py", line 15, in fetch_traffic_signals
+    res.raise_for_status()
+  File "/usr/local/lib/python3.11/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 504 Server Error: Gateway Timeout for url: https://overpass-api.de/api/interpreter
+2025-12-14 03:00:19,767 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:00:19,770 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:00:26,380 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:00:26,381 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:00:27,219 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:00:27,223 | WARNING | simulator | ⚠️ No OSM signals found, using static coordinates
+2025-12-14 03:00:27,224 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:00:27,227 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:00:27,227 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:00:36,314 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:00:36,315 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:00:36,315 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:00:36,994 | INFO | osm | 📍 Retrieved 0 signals
+2025-12-14 03:00:37,004 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:00:37,011 | WARNING | simulator | ⚠️ No OSM signals found, using static coordinates
+2025-12-14 03:00:37,012 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:00:37,013 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:00:37,013 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:01:04,689 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:01:04,689 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:01:04,690 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:01:10,652 | ERROR | osm | ❌ Overpass API request failed
+Traceback (most recent call last):
+  File "/app/app/services/osm.py", line 20, in fetch_traffic_signals
+    res.raise_for_status()
+  File "/usr/local/lib/python3.11/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 504 Server Error: Gateway Timeout for url: https://overpass-api.de/api/interpreter
+2025-12-14 03:01:10,664 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:01:10,665 | WARNING | simulator | ⚠️ No OSM signals found, using static coordinates
+2025-12-14 03:01:10,665 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:01:10,667 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:01:10,667 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:02:16,114 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:02:16,115 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:02:16,115 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:02:16,803 | INFO | osm | 📍 Retrieved 0 signals
+2025-12-14 03:02:16,807 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:02:16,808 | WARNING | simulator | ⚠️ No OSM signals found, using static coordinates
+2025-12-14 03:02:16,808 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:02:16,810 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:02:16,810 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:02:27,843 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:02:27,843 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:02:27,843 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:02:28,640 | INFO | osm | 📍 Retrieved 0 signals
+2025-12-14 03:02:28,644 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:02:28,645 | WARNING | simulator | ⚠️ No OSM signals found — using static coordinates
+2025-12-14 03:02:28,646 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:02:28,647 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:02:28,647 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:02:40,359 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:02:40,359 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:02:40,360 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:02:41,376 | INFO | osm | 📍 Retrieved 0 signals
+2025-12-14 03:02:41,388 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:02:41,390 | WARNING | simulator | ⚠️ No OSM signals found — using static coordinates
+2025-12-14 03:02:41,391 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:02:41,391 | INFO | simulator | ▶ Starting simulator thread
+2025-12-14 03:02:41,395 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:02:41,395 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:02:52,473 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:02:52,474 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:02:52,474 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:02:52,474 | WARNING | osm | ⚠️ Overpass API unavailable — returning empty list
+2025-12-14 03:02:52,475 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:02:52,475 | WARNING | simulator | ⚠️ No OSM signals found — using static coordinates
+2025-12-14 03:02:52,475 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:02:52,475 | INFO | simulator | ▶ Starting simulator thread
+2025-12-14 03:02:52,476 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:02:52,476 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:03:11,488 | INFO | simulator | 🔥 Application startup event reached
+2025-12-14 03:03:11,488 | INFO | simulator | 🔗 Snapping intersections to OSM traffic signals
+2025-12-14 03:03:11,489 | INFO | osm | 🌍 Querying Overpass API
+2025-12-14 03:03:11,491 | WARNING | osm | ⚠️ Overpass API unavailable — returning empty list
+2025-12-14 03:03:11,491 | INFO | simulator | 📡 Found 0 OSM traffic signals
+2025-12-14 03:03:11,491 | WARNING | simulator | ⚠️ No OSM signals found — using static coordinates
+2025-12-14 03:03:11,492 | INFO | simulator | ✅ OSM snapping completed
+2025-12-14 03:03:11,492 | INFO | simulator | ▶ Starting simulator thread
+2025-12-14 03:03:11,493 | INFO | simulator | 🚦 Simulator loop started
+2025-12-14 03:03:11,493 | INFO | simulator | 🚦 Simulator started
+2025-12-14 03:03:22,431 | INFO | osm | 🧠 Using cached OSM traffic signals
+2025-12-14 03:03:22,435 | INFO | osm | 🧠 Using cached OSM traffic signals

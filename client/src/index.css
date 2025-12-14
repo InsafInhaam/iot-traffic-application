@@ -1,0 +1,164 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: #0b0f1a;
+  color: #fff;
+}
+
+.intersection-home {
+  padding: 0;
+  margin: 0;
+}
+
+.intersection-heading {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.dashboard {
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.map-box,
+.chart-box {
+  background: #12172a;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+/* ===== MAP ===== */
+.map {
+  position: relative;
+  height: 360px;
+  background: #0f1528;
+  border-radius: 10px;
+}
+
+/* Nodes */
+.node {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background: #1c2541;
+  border-radius: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.node-name {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* Node positions */
+.node-0 {
+  top: 30px;
+  left: 200px;
+}
+.node-1 {
+  top: 30px;
+  right: 200px;
+}
+.node-2 {
+  bottom: 30px;
+  left: 200px;
+}
+.node-3 {
+  bottom: 30px;
+  right: 200px;
+}
+.node-4 {
+  top: 135px;
+  left: 45%;
+}
+
+/* Roads */
+.road {
+  position: absolute;
+  background: #555;
+}
+.h {
+  height: 6px;
+  width: 180px;
+}
+.v {
+  width: 6px;
+  height: 120px;
+}
+
+.r1 {
+  top: 75px;
+  left: 290px;
+}
+.r2 {
+  bottom: 75px;
+  left: 290px;
+}
+.r3 {
+  top: 115px;
+  left: 45%;
+}
+.r4 {
+  top: 115px;
+  left: 52%;
+}
+
+/* ===== Traffic Light ===== */
+.traffic-light {
+  width: 22px;
+  height: 55px;
+  background: #000;
+  margin: 8px auto 0;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.traffic-light span {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin: 3px auto;
+  opacity: 0.25;
+}
+
+.red {
+  background: red;
+}
+.yellow {
+  background: yellow;
+}
+.green {
+  background: #00ff6a;
+}
+
+.on {
+  opacity: 1 !important;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ===== Tooltip ===== */
+.tooltip {
+  position: absolute;
+  top: -75px;
+  left: -30px;
+  background: #000;
+  padding: 6px;
+  font-size: 11px;
+  border-radius: 6px;
+  display: none;
+  width: 150px;
+}
+
+.node:hover .tooltip {
+  display: block;
+}
