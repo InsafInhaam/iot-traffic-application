@@ -44,16 +44,16 @@ services:
     volumes:
       - ./backend:/app
 
-  # frontend:
-  #   build: ./frontend
-  #   depends_on:
-  #     - backend
-  #   environment:
-  #     NEXT_PUBLIC_API_BASE: http://localhost:8000
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/usr/src/app
+  frontend:
+    build: ./client
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/usr/src/app
 
 volumes:
   db_data:

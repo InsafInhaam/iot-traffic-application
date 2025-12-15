@@ -9,12 +9,32 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import IntersectionMap from "../../components/IntersectionMap";
+import LiveCard from "../../components/LiveCard";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
 
 export default function Dashboard() {
   const [network, setNetwork] = useState([]);
+  const [metrics, setMetrics] = useState([]);
+  const [events, setEvents] = useState([]);
   const [chartData, setChartData] = useState([]);
+
+  /* ---------- DATA POLLING ---------- */
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      try {
+        const e = await fetch(`${API_BASE}/api/v1/events/latest`).then((r) =>
+          r.json()
+        );
+
+        setEvents(e.events || []);
+      } catch (err) {
+        console.error("API error", err);
+      }
+    }, 2000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // --- Fetch network state ---
   useEffect(() => {
@@ -36,45 +56,30 @@ export default function Dashboard() {
     return () => clearInterval(t);
   }, []);
 
+  /* ---------- KPIs ---------- */
+  const totalIntersections = network.length;
+
+  const totalVehicles = network.reduce((sum, i) => sum + (i.vehicles || 0), 0);
+
+  const avgCongestion =
+    totalIntersections === 0
+      ? 0
+      : Math.round(
+          network.reduce((s, i) => s + (i.queue_m || 0), 0) / totalIntersections
+        );
+
   return (
     <div className="dashboard">
       <h1 className="title">🚦 Enterprise Traffic Analytics</h1>
 
+      {/* ================= KPI CARDS ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <KPI title="Intersections" value={totalIntersections} />
+        <KPI title="Total Vehicles" value={totalVehicles} />
+        <KPI title="Avg Congestion (m)" value={avgCongestion} />
+      </div>
+
       {/* ================= MAP ================= */}
-      {/* <div className="map-box">
-        <h2>🗺️ Intersection Network</h2>
-
-        <div className="map">
-          {network.map((n, i) => (
-            <div key={i} className={`node node-${i}`}>
-              <div className="tooltip">
-                <strong>{n.id}</strong>
-                <br />
-                Vehicles: {n.vehicles}
-                <br />
-                Queue: {n.queue_m} m<br />
-                Signal: {n.signal}
-              </div>
-
-              <div className="traffic-light">
-                <span className={n.signal === "RED" ? "red on" : "red"} />
-                <span
-                  className={n.signal === "YELLOW" ? "yellow on" : "yellow"}
-                />
-                <span className={n.signal === "GREEN" ? "green on" : "green"} />
-              </div>
-
-              <div className="node-name">{n.id}</div>
-            </div>
-          ))}
-
-          <div className="road h r1" />
-          <div className="road h r2" />
-          <div className="road v r3" />
-          <div className="road v r4" />
-        </div>
-      </div> */}
-
       <IntersectionMap network={network} />
 
       {/* ================= CHART ================= */}
@@ -89,6 +94,34 @@ export default function Dashboard() {
           </LineChart>
         </ResponsiveContainer>
       </div>
+
+      {/* ================= LIVE EVENTS ================= */}
+      <div className="bg-white rounded-xl shadow p-4">
+        <h2 className="font-semibold mb-3">🚨 Live Events</h2>
+
+        <ul className="space-y-2 max-h-64 overflow-auto text-sm">
+          {events.length === 0 && (
+            <li className="text-gray-500">No events yet</li>
+          )}
+
+          {events.map((e, i) => (
+            <li key={i} className="flex justify-between border-b pb-1">
+              <span>{e.intersection}</span>
+              <span className="text-gray-500">{e.time}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/* ================= KPI CARD ================= */
+function KPI({ title, value }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-5">
+      <p className="text-gray-500">{title}</p>
+      <p className="text-3xl font-bold">{value}</p>
     </div>
   );
 }

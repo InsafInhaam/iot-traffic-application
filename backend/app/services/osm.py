@@ -1,36 +1,42 @@
-import logging
 import requests
+import logging
 
 logger = logging.getLogger("osm")
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
-_cached_signals = None
 
+def fetch_traffic_signals():
+    query = """
+[out:json];
+node["highway"](6.947,79.853,6.965,79.875);
+out;
+"""
 
-def fetch_traffic_signals(bbox):
-    global _cached_signals
-
-    if _cached_signals is not None:
-        logger.info("🧠 Using cached OSM traffic signals")
-        return _cached_signals
-
-    logger.info("🌍 Querying Overpass API")
+    logger.info("🌍 Querying Overpass API for Colombo 13 traffic signals")
 
     try:
-        res = requests.post(OVERPASS_URL, data=query, timeout=20)
+        res = requests.post(
+            OVERPASS_URL,
+            data=query,
+            timeout=30
+        )
         res.raise_for_status()
-        data = res.json()
 
-        _cached_signals = [
-            {"lat": el["lat"], "lng": el["lon"]}
-            for el in data.get("elements", [])
+        data = res.json()
+        elements = data.get("elements", [])
+
+        logger.info(f"🚦 Found {len(elements)} traffic signals")
+
+        return [
+            {
+                "lat": el["lat"],
+                "lng": el["lon"]
+            }
+            for el in elements
         ]
 
-        logger.info(f"📍 Retrieved {_cached_signals.__len__()} signals")
-        return _cached_signals
-
-    except Exception:
-        logger.warning("⚠️ Overpass API unavailable — returning empty list")
-        _cached_signals = []
+    except requests.exceptions.RequestException as e:
+        logger.warning("⚠️ Overpass API failed (timeout / rate limit)")
+        logger.debug(e)
         return []

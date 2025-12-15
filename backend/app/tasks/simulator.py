@@ -2,15 +2,13 @@ import threading
 import time
 import random
 from datetime import datetime
-
-from app.services.osm import fetch_traffic_signals
-from app.utils.geo import haversine
 import logging
+
 logger = logging.getLogger("simulator")
 
-# -----------------------------------
-# INITIAL APPROXIMATE COORDINATES
-# -----------------------------------
+# -----------------------------
+# INTERSECTION COORDINATES
+# -----------------------------
 INTERSECTION_COORDS = {
     "Intersection_A": {"lat": 6.943470, "lng": 79.864326},
     "Intersection_B": {"lat": 6.943220, "lng": 79.864216},
@@ -28,111 +26,101 @@ INTERSECTIONS = {
 }
 
 state = {}
-
-# Colombo bounding box
-BBOX = (6.94, 79.85, 6.96, 79.87)
+_events = []
+_chart_points = []
 
 _simulator_started = False
-_osm_snapped = False
 
-
-# -----------------------------------
+# -----------------------------
 # SIGNAL LOGIC
-# -----------------------------------
-def compute_signal(vehicle_count: int):
-    if vehicle_count <= 5:
+# -----------------------------
+def compute_signal(vehicles: int):
+    if vehicles <= 5:
         return "GREEN"
-    elif vehicle_count <= 12:
+    elif vehicles <= 12:
         return "YELLOW"
     return "RED"
 
 
-# -----------------------------------
-# SNAP TO REAL OSM SIGNALS (RUN ONCE)
-# -----------------------------------
-def snap_intersections_to_osm():
-    global _osm_snapped
+# -----------------------------
+# METRICS + EVENTS
+# -----------------------------
+def record_event(event_type, intersection):
+    _events.append({
+        "type": event_type,
+        "intersection": intersection,
+        "time": datetime.now().strftime("%H:%M:%S"),
+    })
 
-    if _osm_snapped:
-        logger.info("🔁 OSM snapping already done — skipping")
-        return
+    if len(_events) > 50:
+        _events.pop(0)
 
-    logger.info("🔗 Snapping intersections to OSM traffic signals")
 
-    try:
-        signals = fetch_traffic_signals(BBOX)
-        logger.info(f"📡 Found {len(signals)} OSM traffic signals")
-    except Exception:
-        logger.warning("⚠️ OSM fetch failed — using static coordinates")
-        _osm_snapped = True
-        return
+def record_metrics(total_vehicles):
+    _chart_points.append({
+        "time": datetime.now().strftime("%H:%M:%S"),
+        "vehicles": total_vehicles,
+    })
 
-    if not signals:
-        logger.warning("⚠️ No OSM signals found — using static coordinates")
-        _osm_snapped = True
-        return
+    if len(_chart_points) > 30:
+        _chart_points.pop(0)
 
-    for name, coord in INTERSECTION_COORDS.items():
-        best, best_dist = None, float("inf")
 
-        for s in signals:
-            d = haversine(coord["lat"], coord["lng"], s["lat"], s["lng"])
-            if d < best_dist:
-                best_dist = d
-                best = s
-
-        if best:
-            INTERSECTION_COORDS[name]["lat"] = best["lat"]
-            INTERSECTION_COORDS[name]["lng"] = best["lng"]
-            logger.info(f"✅ {name} snapped ({round(best_dist,1)} m)")
-
-    _osm_snapped = True
-    logger.info("✅ OSM snapping finalized")
-
-# -----------------------------------
+# -----------------------------
 # SIMULATOR LOOP
-# -----------------------------------
-
-
+# -----------------------------
 def simulator_loop():
     logger.info("🚦 Simulator loop started")
 
     while True:
+        total_vehicles = 0
+
         for name, connections in INTERSECTIONS.items():
             vehicles = random.randint(0, 20)
             queue_m = round(vehicles * random.uniform(1.5, 3.0), 1)
-            coords = INTERSECTION_COORDS[name]
+
+            total_vehicles += vehicles
 
             state[name] = {
                 "id": name,
                 "vehicles": vehicles,
                 "queue_m": queue_m,
                 "signal": compute_signal(vehicles),
-                "last_update": datetime.now().strftime("%H:%M:%S"),
                 "connections": connections,
-                "lat": coords["lat"],
-                "lng": coords["lng"],
+                "lat": INTERSECTION_COORDS[name]["lat"],
+                "lng": INTERSECTION_COORDS[name]["lng"],
+                "last_update": datetime.now().strftime("%H:%M:%S"),
             }
 
-        logger.debug("🔄 Simulator tick")
+            record_event("update", name)
+
+        record_metrics(total_vehicles)
         time.sleep(2)
 
 
-# -----------------------------------
+# -----------------------------
 # PUBLIC API
-# -----------------------------------
+# -----------------------------
 def start_simulator():
     global _simulator_started
 
     if _simulator_started:
-        logger.info("🔁 Simulator already running — skipping")
+        logger.info("🔁 Simulator already running")
         return
 
-    logger.info("▶ Starting simulator thread")
     t = threading.Thread(target=simulator_loop, daemon=True)
     t.start()
     _simulator_started = True
+    logger.info("▶ Simulator thread started")
 
 
 def get_network_state():
     return list(state.values())
+
+
+def get_live_events():
+    return _events
+
+
+def get_chart_data():
+    return _chart_points

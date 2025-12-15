@@ -1,0 +1,207 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  /* background: #0b0f1a; */
+  /* color: #fff; */
+}
+
+.dashboard {
+  padding: 24px;
+  background: #020617;
+  color: white;
+  min-height: 100vh;
+}
+
+.network {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.node {
+  background: #0f172a;
+  padding: 14px;
+  border-radius: 14px;
+  width: 150px;
+  text-align: center;
+  box-shadow: 0 0 18px rgba(0, 255, 0, 0.15);
+}
+
+.node-info {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.traffic-light {
+  width: 30px;
+  background: #020617;
+  padding: 4px;
+  border-radius: 6px;
+  margin: auto;
+}
+
+.traffic-light span {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 4px auto;
+  opacity: 0.25;
+}
+
+.red {
+  background: red;
+}
+.yellow {
+  background: yellow;
+}
+.green {
+  background: lime;
+}
+
+.on {
+  opacity: 1 !important;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.line.h {
+  width: 40px;
+  height: 4px;
+  background: #334155;
+}
+
+/* VEHICLE LANE */
+.vehicle-lane {
+  position: relative;
+  width: 50px;
+  height: 8px;
+  background: #1e293b;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* VEHICLE */
+.vehicle {
+  position: absolute;
+  top: -4px;
+  left: -14px;
+  width: 14px;
+  height: 14px;
+  background: #38bdf8;
+  border-radius: 4px;
+  opacity: 0.9;
+}
+
+/* MOVING */
+.vehicle.move {
+  animation: drive 2s linear infinite;
+}
+
+/* STOPPED */
+.vehicle.stop {
+  animation: none;
+  left: 8px;
+  background: #94a3b8;
+}
+
+/* ANIMATION */
+@keyframes drive {
+  from {
+    left: -14px;
+  }
+  to {
+    left: 60px;
+  }
+}
+
+.dashboard {
+  background: #0b1220;
+  color: white;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.traffic-map {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  display: block;
+  background: #020617;
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* ROADS */
+.road {
+  stroke: #1e293b;
+  stroke-width: 22;
+  stroke-linecap: round;
+}
+
+.road::after {
+  stroke: #334155;
+  stroke-width: 2;
+}
+
+/* INTERSECTIONS */
+.intersection {
+  fill: #020617;
+  stroke: #475569;
+  stroke-width: 2;
+}
+
+/* LABEL */
+.label {
+  fill: #94a3b8;
+  font-size: 12px;
+  text-anchor: middle;
+}
+
+/* VEHICLES */
+.car {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.car.stop animateMotion {
+  display: none;
+}
+
+.traffic-map {
+  width: 100%;
+  background: #020617;
+  border-radius: 18px;
+}
+
+.road {
+  stroke: #1e293b;
+  stroke-width: 20;
+  stroke-linecap: round;
+}
+
+.heat-road {
+  stroke-width: 28;
+  stroke-linecap: round;
+  filter: blur(6px);
+  opacity: 0.7;
+}
+
+.vehicle {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 6px #38bdf8);
+}
+
+.intersection {
+  fill: #020617;
+  stroke: #475569;
+  stroke-width: 2;
+}
