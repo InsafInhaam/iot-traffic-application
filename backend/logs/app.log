@@ -4589,3 +4589,6 @@ AttributeError: module 'app.tasks.simulator' has no attribute 'get_chart_data'
 2025-12-15 16:59:40,862 | INFO | app | 🔥 Application startup
 2025-12-15 16:59:40,864 | INFO | simulator | 🚦 Simulator loop started
 2025-12-15 16:59:40,864 | INFO | simulator | ▶ Simulator thread started
+2025-12-15 17:16:58,711 | INFO | app | 🔥 Application startup
+2025-12-15 17:16:58,718 | INFO | simulator | 🚦 Simulator loop started
+2025-12-15 17:16:58,722 | INFO | simulator | ▶ Simulator thread started
