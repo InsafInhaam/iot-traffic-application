@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   db:
     image: postgres:15
@@ -55,6 +56,17 @@ services:
     volumes:
       - ./client:/usr/src/app
       - /usr/src/app/node_modules
+
+  traffic-controller:
+    build: ./traffic-controller
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODEMCU_IP: 192.168.1.7
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./traffic-controller:/app
 
 volumes:
   db_data:
