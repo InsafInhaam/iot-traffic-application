@@ -4595,3 +4595,41 @@ AttributeError: module 'app.tasks.simulator' has no attribute 'get_chart_data'
 2025-12-17 23:30:20,823 | INFO | app | 🔥 Application startup
 2025-12-17 23:30:20,826 | INFO | simulator | 🚦 Simulator loop started
 2025-12-17 23:30:20,828 | INFO | simulator | ▶ Simulator thread started
+2025-12-19 03:23:00,951 | ERROR | asyncio | Task exception was never retrieved
+future: <Task finished name='Task-3' coro=<redis_subscriber() done, defined at /app/app/events.py:41> exception=ConnectionError('Error 111 connecting to redis:6379. Connection refused.')>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/retry.py", line 50, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/connection.py", line 607, in read_response
+    response = await self._parser.read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/_parsers/resp2.py", line 82, in read_response
+    response = await self._read_response(disable_decoding=disable_decoding)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/_parsers/resp2.py", line 90, in _read_response
+    raw = await self._readline()
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/_parsers/base.py", line 470, in _readline
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/app/events.py", line 45, in redis_subscriber
+    async for msg in pubsub.listen():
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/client.py", line 1145, in listen
+    response = await self.handle_message(await self.parse_response(block=True))
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/client.py", line 1032, in parse_response
+    response = await self._execute(
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/client.py", line 1012, in _execute
+    return await conn.retry.call_with_retry(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/retry.py", line 53, in call_with_retry
+    await fail(error)
+  File "/usr/local/lib/python3.11/site-packages/redis/asyncio/connection.py", line 317, in connect_check_health
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 111 connecting to redis:6379. Connection refused.

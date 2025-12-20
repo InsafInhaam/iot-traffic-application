@@ -83,6 +83,11 @@ pip install -r requirements.txt
 ```bash
 python3 traffic_controller.py
 ```
+* Or
+
+```bash
+python traffic_controller.py
+```
 
 ---
 

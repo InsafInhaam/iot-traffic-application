@@ -26,6 +26,7 @@ import threading
 import queue
 import requests
 from ultralytics import YOLO
+import glob
 
 # --------- CONFIG (edit these) ----------
 LANES_FILE = "lanes_config.json"
@@ -45,6 +46,41 @@ EMERGENCY_GREEN_MS = 8000
 CONTROL_INTERVAL_MS = 500
 COUNT_WINDOW_SECS = 2.0
 DEFAULT_VEHICLE_LENGTH_M = 4.5
+
+# Load toy templates
+TOY_IMAGES = []
+TOY_NAMES = []
+
+for path in glob.glob("toy_vehicles/*.jpg"):
+    img = cv2.imread(path)
+    if img is not None:
+        TOY_IMAGES.append(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
+        TOY_NAMES.append(os.path.basename(path))
+
+
+def detect_toy_vehicle(crop):
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    gray = cv2.resize(gray, (200, 200))
+
+    best_score = 0
+    best_name = None
+
+    for toy_img, toy_name in zip(TOY_IMAGES, TOY_NAMES):
+        toy_resized = cv2.resize(toy_img, (200, 200))
+
+        # Compute similarity (normalized correlation)
+        score = cv2.matchTemplate(gray, toy_resized, cv2.TM_CCOEFF_NORMED)
+        _, max_val, _, _ = cv2.minMaxLoc(score)
+
+        if max_val > best_score:
+            best_score = max_val
+            best_name = toy_name
+
+    # threshold (0.45 is decent for template matching)
+    if best_score > 0.45:
+        return best_name, best_score
+    return None, best_score
+
 
 # --------- utils for saving/loading ---------
 
@@ -460,17 +496,15 @@ def run_webcam_detection(device_index=0):
                 for box in r.boxes:
                     cls = int(box.cls[0])
                     label = model.names[cls]
-                    if label == 'motorcycle':
-                        label = 'motorbike'
-                    if label not in VEHICLE_LABELS and label not in EMERGENCY_LABELS:
-                        continue
+
                     x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
-                    rects.append((x1, y1, x2, y2))
-                    labels.append(label)
-                    cv2.rectangle(annotated, (x1, y1),
-                                  (x2, y2), (200, 30, 30), 2)
-                    cv2.putText(annotated, label, (x1, y1-6),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (220, 220, 0), 2)
+                    crop = frame[y1:y2, x1:x2]
+
+                    # --- NEW: toy detection check ---
+                    toy_name, toy_score = detect_toy_vehicle(crop)
+                    if toy_name:
+                        label = f"toy:{toy_name}"
+                        print("Toy matched:", toy_name, "score:", toy_score)
 
             objects = tracker.update(rects)
             # map centroids back to rect index by nearest centroid
