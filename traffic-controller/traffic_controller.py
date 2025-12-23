@@ -47,7 +47,6 @@ CONTROL_INTERVAL_MS = 500
 COUNT_WINDOW_SECS = 2.0
 DEFAULT_VEHICLE_LENGTH_M = 4.5
 
-# Load toy templates
 TOY_IMAGES = []
 TOY_NAMES = []
 
@@ -58,6 +57,7 @@ for path in glob.glob("toy_vehicles/*.jpg"):
         TOY_NAMES.append(os.path.basename(path))
 
 
+# --- Toy detection function ---
 def detect_toy_vehicle(crop):
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
     gray = cv2.resize(gray, (200, 200))
@@ -76,7 +76,6 @@ def detect_toy_vehicle(crop):
             best_score = max_val
             best_name = toy_name
 
-    # threshold (0.45 is decent for template matching)
     if best_score > 0.45:
         return best_name, best_score
     return None, best_score
@@ -482,16 +481,21 @@ def run_webcam_detection(device_index=0):
     window_ms = int(COUNT_WINDOW_SECS * 1000)
     last_control = 0
 
+    # -------- Inside run_webcam_detection --------
     try:
         while True:
             ret, frame = cap.read()
             if not ret:
                 print("No frame")
                 break
+
+            # --- YOLO Detection ---
             results = model(frame, conf=CONF, iou=IOU, verbose=False)
+
             annotated = frame.copy()
             rects = []
             labels = []
+
             for r in results:
                 for box in r.boxes:
                     cls = int(box.cls[0])
@@ -500,32 +504,40 @@ def run_webcam_detection(device_index=0):
                     x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
                     crop = frame[y1:y2, x1:x2]
 
-                    # --- NEW: toy detection check ---
+                    # --- Toy vehicle detection ---
                     toy_name, toy_score = detect_toy_vehicle(crop)
                     if toy_name:
                         label = f"toy:{toy_name}"
-                        print("Toy matched:", toy_name, "score:", toy_score)
+                        print(
+                            f"Toy matched: {toy_name}, score: {toy_score:.2f}")
 
+                    # --- Append to tracker lists ---
+                    rects.append((x1, y1, x2, y2))
+                    labels.append(label)
+
+            # --- Tracker update ---
             objects = tracker.update(rects)
-            # map centroids back to rect index by nearest centroid
-            rect_centroids = [((r[0]+r[2])//2, (r[1]+r[3])//2) for r in rects]
-            # build mapping from object id to associated label & bbox
+
+            # Map object IDs to labels
             oid_to_label = {}
+            rect_centroids = [((r[0]+r[2])//2, (r[1]+r[3])//2) for r in rects]
+
             for oid, centroid in objects.items():
-                # find nearest rect centroid
                 if len(rect_centroids) == 0:
                     continue
+                # Find nearest bbox
                 dists = [np.hypot(centroid[0]-c[0], centroid[1]-c[1])
                          for c in rect_centroids]
                 idx = int(np.argmin(dists))
                 if idx < len(labels):
                     oid_to_label[oid] = labels[idx]
-                # draw
-                cv2.putText(annotated, f"ID:{oid}", (
-                    centroid[0]-10, centroid[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+                # Draw tracker ID
+                cv2.putText(annotated, f"ID:{oid}", (centroid[0]-10, centroid[1]-10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 cv2.circle(annotated, centroid, 4, (0, 255, 0), -1)
 
-            # maintain history
+            # --- Maintain history for adaptive control ---
             now_ms = int(time.time()*1000)
             for oid, centroid in objects.items():
                 label = oid_to_label.get(oid, 'car')
@@ -533,47 +545,46 @@ def run_webcam_detection(device_index=0):
                 if lane:
                     track_history.append((now_ms, oid, lane, label, centroid))
 
-            # prune
+            # Prune old history
             track_history = [
                 t for t in track_history if now_ms - t[0] <= window_ms]
 
-            # aggregated counts: compute queue length in meters per lane
+            # --- Aggregate queue lengths ---
             aggregated_m = {l: 0.0 for l in lane_names}
-            # simple approach: unique track ids per lane * vehicle length, optionally refine with homography
             seen = {l: set() for l in lane_names}
+
             for ts, oid, lane, label, centroid in track_history:
                 if oid in seen[lane]:
                     continue
                 seen[lane].add(oid)
-                # if homography available, try world coords
                 w = pixel_to_world(centroid)
                 if w is not None:
-                    # approximate lane direction by projecting centroid into lane centerline is omitted for simplicity
-                    # use vehicle length estimate
                     aggregated_m[lane] += DEFAULT_VEHICLE_LENGTH_M
                 else:
                     aggregated_m[lane] += DEFAULT_VEHICLE_LENGTH_M
 
-            # draw lane info
+            # Draw lane info
             for name, poly in lanes_np.items():
                 pts = poly.reshape((-1, 1, 2))
                 cv2.polylines(annotated, [pts], True, (0, 200, 0), 2)
                 pos = tuple(poly.mean(axis=0).astype(int))
-                cv2.putText(annotated, f"{name} {aggregated_m.get(name, 0):.0f}m",
+                cv2.putText(annotated, f"{name} {aggregated_m.get(name,0):.0f}m",
                             pos, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
 
-            # emergency detection
+            # --- Emergency detection ---
             emergency_lane = None
             for ts, oid, lane, label, centroid in track_history:
                 if label in EMERGENCY_LABELS:
                     emergency_lane = lane
                     break
 
+            # --- Adaptive control ---
             if now_ms - last_control >= CONTROL_INTERVAL_MS:
                 controller.next_action(
                     aggregated_m, emergency_lane=emergency_lane)
                 last_control = now_ms
 
+            # --- Display ---
             display = cv2.resize(annotated, (1280, int(
                 annotated.shape[0]*1280/annotated.shape[1])))
             cv2.imshow('Live Detection', display)
@@ -583,11 +594,13 @@ def run_webcam_detection(device_index=0):
             if k == ord('p'):
                 cv2.imwrite('snapshot.jpg', frame)
                 print('snapshot saved')
+
     except KeyboardInterrupt:
         print('interrupted')
     finally:
         cap.release()
         cv2.destroyAllWindows()
+
 
 # ------------- main CLI ----------------
 
