@@ -34,6 +34,8 @@ _simulator_started = False
 # -----------------------------
 # SIGNAL LOGIC
 # -----------------------------
+
+
 def compute_signal(vehicles: int):
     if vehicles <= 5:
         return "GREEN"

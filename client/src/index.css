@@ -120,7 +120,7 @@ body {
 /* ================= TRAFFIC LIGHT ================= */
 .traffic-light {
   width: 30px;
-  background: #f1f5f9;
+  background: #03111f;
   padding: 4px;
   border-radius: 6px;
   margin: auto;
@@ -162,7 +162,8 @@ body {
   overflow: hidden;
 }
 
-.vehicle {
+/* A separate class for lane UI vehicles to avoid clashing with SVG `.vehicle` */
+.lane-vehicle {
   position: absolute;
   top: -4px;
   left: -14px;
@@ -173,12 +174,12 @@ body {
 }
 
 /* MOVING */
-.vehicle.move {
+.lane-vehicle.move {
   animation: drive 2s linear infinite;
 }
 
 /* STOPPED */
-.vehicle.stop {
+.lane-vehicle.stop {
   animation: none;
   left: 8px;
   background: #94a3b8;
